@@ -856,39 +856,9 @@ function gerarWord() {
     doc += '</table>';
   });
 
-  doc += '<div class="footer">Mercado Open – Painel de Migração Higilabor | higilabor.com.br</div>
-<!-- MODAL RELATÓRIO -->
-<div id="relatorio-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:#fff;border-radius:12px;width:100%;max-width:860px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-    <div style="padding:1rem 1.5rem;border-bottom:1px solid #e0e8e0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#1a2e1a;text-transform:uppercase;">📄 Relatório de Migração — Higilabor</div>
-        <div style="font-size:12px;color:#7a9a7a;margin-top:2px;">Use Ctrl+P para imprimir ou salvar como PDF</div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="imprimirRelatorio()" style="background:#1e8a1e;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Imprimir / Salvar PDF</button>
-        <button onclick="fecharRelatorio()" style="background:#f5f7f5;color:#4a6e4a;border:1px solid #c8d8c8;border-radius:6px;padding:6px 16px;font-size:13px;cursor:pointer;">✕ Fechar</button>
-      </div>
-    </div>
-    <iframe id="relatorio-frame" style="flex:1;border:none;width:100%;min-height:500px;" srcdoc=""></iframe>
-  </div>
-</div>
+    doc += '<div class="footer">Mercado Open – Painel de Migração Higilabor | higilabor.com.br</div></body></html>';
 
-<script>
-function fecharRelatorio() {
-  document.getElementById('relatorio-modal').style.display = 'none';
-}
-function imprimirRelatorio() {
-  document.getElementById('relatorio-frame').contentWindow.print();
-}
-document.getElementById('relatorio-modal').addEventListener('click', function(e){
-  if(e.target === this) fecharRelatorio();
-});
-</script>
-
-</body></html>';
-
-  // Exibe o relatório em modal interno - funciona em qualquer ambiente
+    // Exibe o relatório em modal interno - funciona em qualquer ambiente
   var modal = document.getElementById('relatorio-modal');
   var frame = document.getElementById('relatorio-frame');
   frame.srcdoc = doc;
