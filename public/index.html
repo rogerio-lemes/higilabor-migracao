@@ -805,6 +805,24 @@ updateStats();
 
 // ===== GERAR RELATÓRIO WORD =====
 function gerarWord() {
+  // Carrega docx.js via CDN e gera .docx real
+  if (typeof docx === 'undefined') {
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/docx@9.0.2/build/index.umd.js';
+    script.onload = function() { buildDocx(); };
+    script.onerror = function() { alert('Erro ao carregar biblioteca. Verifique sua conexão.'); };
+    document.head.appendChild(script);
+  } else {
+    buildDocx();
+  }
+}
+
+function buildDocx() {
+  var D = docx;
+  var GREEN = "1e8a1e", WHITE = "FFFFFF";
+  var border = { style: D.BorderStyle.SINGLE, size: 1, color: "C8E6C8" };
+  var borders = { top: border, bottom: border, left: border, right: border };
+
   var categorias = {
     'Páginas Principais': PAGES.principais,
     'Gerenciamento de Riscos': PAGES.riscos,
@@ -813,53 +831,101 @@ function gerarWord() {
     'Avaliações de Agentes': PAGES.avaliacoes,
     'Emergência e Segurança': PAGES.emergencia,
     'Treinamentos NR': PAGES.treinamentos,
-    'Páginas SEO Local (Octávio)': PAGES.octavio_html,
-    'Artigos de Blog (Octávio)': PAGES.octavio_artigos,
+    'Páginas SEO Local – Cidades': PAGES.octavio_html,
+    'Artigos de Blog': PAGES.octavio_artigos,
   };
+
   var agora = new Date().toLocaleDateString('pt-BR');
   var simCount = Object.values(state).filter(function(v){ return v==='sim'; }).length;
   var naoCount = Object.values(state).filter(function(v){ return v==='nao'; }).length;
   var total = Object.values(PAGES).flat().length;
+  var pend = total - simCount - naoCount;
 
-  var rows = '';
-  Object.keys(categorias).forEach(function(cat) {
-    var pages = categorias[cat];
-    rows += '<tr style="background:#1e8a1e"><td colspan="3" style="color:#fff;font-weight:bold;padding:8px;font-size:13pt">' + cat + '</td></tr>';
-    pages.forEach(function(page) {
+  function makeTable(pages) {
+    var headerRow = new D.TableRow({ tableHeader: true, children: [
+      new D.TableCell({ width:{size:3600,type:D.WidthType.DXA}, borders, shading:{fill:GREEN,type:D.ShadingType.CLEAR}, margins:{top:80,bottom:80,left:120,right:120},
+        children:[new D.Paragraph({children:[new D.TextRun({text:"Página",bold:true,color:WHITE,size:18,font:"Arial"})]})] }),
+      new D.TableCell({ width:{size:4400,type:D.WidthType.DXA}, borders, shading:{fill:GREEN,type:D.ShadingType.CLEAR}, margins:{top:80,bottom:80,left:120,right:120},
+        children:[new D.Paragraph({children:[new D.TextRun({text:"URL",bold:true,color:WHITE,size:18,font:"Arial"})]})] }),
+      new D.TableCell({ width:{size:1360,type:D.WidthType.DXA}, borders, shading:{fill:GREEN,type:D.ShadingType.CLEAR}, margins:{top:80,bottom:80,left:120,right:120},
+        children:[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:"Migrar?",bold:true,color:WHITE,size:18,font:"Arial"})]})] }),
+    ]});
+    var rows = pages.map(function(page, i) {
       var id = slugify(page.url);
       var st = state[id] || 'pendente';
-      var cor = st==='sim' ? '#1e8a1e' : st==='nao' ? '#cc2233' : '#e08800';
-      var label = st==='sim' ? '✅ Sim' : st==='nao' ? '❌ Não' : '⏳ Pendente';
-      rows += '<tr><td style="padding:6px 8px;border-bottom:1px solid #ddd">' + page.name + '</td>'
-            + '<td style="padding:6px 8px;border-bottom:1px solid #ddd;font-size:9pt;color:#4a6e4a">' + page.url + '</td>'
-            + '<td style="padding:6px 8px;border-bottom:1px solid #ddd;color:' + cor + ';font-weight:bold">' + label + '</td></tr>';
+      var cor = st==='sim' ? GREEN : st==='nao' ? 'CC2233' : 'E08800';
+      var label = st==='sim' ? 'Sim' : st==='nao' ? 'Não' : 'Pendente';
+      var fill = i%2===0 ? WHITE : 'F0F5F0';
+      return new D.TableRow({ children: [
+        new D.TableCell({ width:{size:3600,type:D.WidthType.DXA}, borders, shading:{fill,type:D.ShadingType.CLEAR}, margins:{top:60,bottom:60,left:120,right:120},
+          children:[new D.Paragraph({children:[new D.TextRun({text:page.name,size:17,font:"Arial"})]})] }),
+        new D.TableCell({ width:{size:4400,type:D.WidthType.DXA}, borders, shading:{fill,type:D.ShadingType.CLEAR}, margins:{top:60,bottom:60,left:120,right:120},
+          children:[new D.Paragraph({children:[new D.TextRun({text:page.url,size:14,color:"3a6e3a",font:"Arial"})]})] }),
+        new D.TableCell({ width:{size:1360,type:D.WidthType.DXA}, borders, shading:{fill,type:D.ShadingType.CLEAR}, margins:{top:60,bottom:60,left:120,right:120},
+          children:[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:label,size:17,bold:st!=='pendente',color:cor,font:"Arial"})]})] }),
+      ]});
     });
+    return new D.Table({ width:{size:9360,type:D.WidthType.DXA}, columnWidths:[3600,4400,1360], rows:[headerRow,...rows] });
+  }
+
+  var children = [];
+
+  // Título
+  children.push(new D.Paragraph({ heading:D.HeadingLevel.HEADING_1, spacing:{before:0,after:240},
+    children:[new D.TextRun({text:"Higilabor – Relatório de Migração de Site",bold:true,size:44,font:"Arial",color:GREEN})] }));
+  children.push(new D.Paragraph({ spacing:{after:80},
+    children:[new D.TextRun({text:"Mercado Open  |  Serviço de Migração + SEO Local",size:22,color:"555555",font:"Arial"})] }));
+  children.push(new D.Paragraph({ spacing:{after:200},
+    children:[new D.TextRun({text:"Data: "+agora+"   |   Total: "+total+" páginas   |   Migrar: "+simCount+"   |   Não migrar: "+naoCount+"   |   Pendentes: "+pend,size:20,font:"Arial",color:"444444"})] }));
+
+  // Sumário simples
+  children.push(new D.Paragraph({heading:D.HeadingLevel.HEADING_1,spacing:{before:240,after:200},
+    children:[new D.TextRun({text:"Sumário",bold:true,size:36,font:"Arial",color:GREEN})] }));
+  Object.keys(categorias).forEach(function(cat, i) {
+    children.push(new D.Paragraph({ spacing:{before:60,after:60},
+      children:[new D.TextRun({text:(i+1)+".  "+cat+"  ("+categorias[cat].length+" páginas)",size:20,font:"Arial",color:GREEN})] }));
   });
 
-  var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Higilabor Migração</title>'
-    + '<style>body{font-family:Arial,sans-serif;margin:40px;color:#1a2e1a}'
-    + 'h1{color:#1e8a1e;border-bottom:2px solid #1e8a1e;padding-bottom:8px}'
-    + '.box{background:#f5f7f5;border:1px solid #c8e6c8;padding:16px;border-radius:8px;margin:16px 0}'
-    + 'table{width:100%;border-collapse:collapse;margin-top:16px}'
-    + 'th{background:#1e8a1e;color:#fff;padding:8px;text-align:left}'
-    + '@media print{button{display:none}}'
-    + '</style></head><body>'
-    + '<h1>Higilabor – Relatório de Migração</h1>'
-    + '<div class="box">'
-    + '<b>Data:</b> ' + agora + ' &nbsp;|&nbsp; '
-    + '<b>Total:</b> ' + total + ' páginas &nbsp;|&nbsp; '
-    + '<b style="color:#1e8a1e">Migrar: ' + simCount + '</b> &nbsp;|&nbsp; '
-    + '<b style="color:#cc2233">Não migrar: ' + naoCount + '</b> &nbsp;|&nbsp; '
-    + '<b style="color:#e08800">Pendentes: ' + (total-simCount-naoCount) + '</b>'
-    + '</div>'
-    + '<button onclick="window.print()" style="background:#1e8a1e;color:#fff;border:none;padding:10px 24px;font-size:14px;border-radius:6px;cursor:pointer;margin-bottom:16px">🖨️ Imprimir / Salvar PDF</button>'
-    + '<table><tr><th>Página</th><th>URL</th><th>Migrar?</th></tr>' + rows + '</table>'
-    + '</body></html>';
+  // Seções
+  Object.keys(categorias).forEach(function(cat, idx) {
+    children.push(new D.Paragraph({children:[new D.PageBreak()]}));
+    children.push(new D.Paragraph({heading:D.HeadingLevel.HEADING_2,spacing:{before:0,after:200},
+      children:[new D.TextRun({text:cat,bold:true,size:32,font:"Arial",color:GREEN})] }));
+    children.push(new D.Paragraph({spacing:{after:120},
+      children:[new D.TextRun({text:categorias[cat].length+" páginas nesta categoria",size:18,font:"Arial",color:"888888",italics:true})] }));
+    children.push(makeTable(categorias[cat]));
+  });
 
-  var w = window.open('about:blank', '_blank');
-  w.document.open();
-  w.document.write(doc);
-  w.document.close();
+  // Rodapé
+  children.push(new D.Paragraph({children:[new D.PageBreak()]}));
+  children.push(new D.Paragraph({ spacing:{before:200},
+    children:[new D.TextRun({text:"Mercado Open – higilabor.com.br",size:18,color:"7a9a7a",font:"Arial"})] }));
+
+  var doc = new D.Document({
+    styles: {
+      default:{ document:{ run:{ font:"Arial", size:20 } } },
+      paragraphStyles:[
+        {id:"Heading1",name:"Heading 1",basedOn:"Normal",next:"Normal",quickFormat:true,
+          run:{size:44,bold:true,font:"Arial",color:GREEN},
+          paragraph:{spacing:{before:0,after:240},outlineLevel:0}},
+        {id:"Heading2",name:"Heading 2",basedOn:"Normal",next:"Normal",quickFormat:true,
+          run:{size:32,bold:true,font:"Arial",color:GREEN},
+          paragraph:{spacing:{before:0,after:200},outlineLevel:1}},
+      ]
+    },
+    sections:[{ properties:{ page:{ size:{width:12240,height:15840}, margin:{top:1080,right:1080,bottom:1080,left:1080} } }, children:children }]
+  });
+
+  D.Packer.toBlob(doc).then(function(blob) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Higilabor_Migracao_' + agora.split('/').join('-') + '.docx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  });
 }
 
 
