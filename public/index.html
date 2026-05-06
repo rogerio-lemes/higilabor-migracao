@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Higilabor – Painel de Migração de Site | SEO Local</title>
+<meta name="description" content="Painel de controle para migração do site Higilabor – Higiene, Segurança e Medicina do Trabalho. Gestão de páginas, SEO Local e otimização de conteúdo.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1e8a1e;
+    --green-dark: #166616;
+    --green-light: #3ec73e;
+    --green-glow: rgba(30,138,30,0.08);
+    --bg: #f5f7f5;
+    --bg2: #ffffff;
+    --bg3: #eef2ee;
+    --border: rgba(30,138,30,0.15);
+    --border-strong: rgba(30,138,30,0.35);
+    --text: #1a2e1a;
+    --text-muted: #4a6e4a;
+    --text-dim: #7a9a7a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .container { max-width: 1100px; margin: 0 auto; width: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID PATTERN BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(30,138,30,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,138,30,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 10;
+    border-bottom: 1px solid var(--border);
+    background: rgba(245,247,245,0.97);
+    backdrop-filter: blur(10px);
+    padding: 1.5rem 0;
+  }
+  .logo-wrap img { height: 64px; filter: brightness(1.1); }
+  .header-badge {
+    background: var(--green-glow);
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    color: var(--green);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* HERO */
+  .hero {
+    position: relative; z-index: 5;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-tag {
+    display: inline-block;
+    background: var(--green-glow);
+    border: 1px solid var(--border-strong);
+    color: var(--green);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    color: #1a2e1a;
+    line-height: 1.05;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.75rem;
+  }
+  h1 span { color: var(--green); }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 620px;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  /* COPY SEO */
+  .seo-copy {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin: 0 2.5rem 2rem;
+    position: relative; z-index: 5;
+  }
+  .seo-copy h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .seo-copy h2::before { content: '▶'; font-size: 10px; }
+  .seo-copy p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+  .seo-copy p strong { color: var(--text); font-weight: 600; }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(245,247,245,0.98);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    backdrop-filter: blur(10px);
+  }
+  .stat {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--green);
+    line-height: 1;
+    transition: all 0.3s;
+  }
+  .stat-num.red { color: #e05252; }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.3;
+  }
+  .stat-divider {
+    width: 1px; height: 32px;
+    background: var(--border);
+  }
+  .stats-bar .progress-wrap {
+    flex: 1; min-width: 200px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #dce8dc;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-dark), var(--green));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* MAIN */
+  main {
+    position: relative; z-index: 5;
+    padding: 2rem 0 4rem;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 2.5rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 32px; height: 32px;
+    background: rgba(30,138,30,0.08);
+    border: 1px solid rgba(30,138,30,0.25);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a2e1a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  /* PAGE CARDS */
+  .pages-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .page-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem 1.25rem;
+    display: flex; align-items: center; gap: 1rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .page-card:hover {
+    border-color: var(--border-strong);
+    background: var(--bg3);
+  }
+  .page-card.migrar { border-left: 3px solid var(--green); }
+  .page-card.nao-migrar { border-left: 3px solid #555; }
+
+  .page-link {
+    flex: 1;
+    display: flex; flex-direction: column; gap: 3px;
+    text-decoration: none;
+    min-width: 0;
+  }
+  .page-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: color 0.2s;
+  }
+  .page-link:hover .page-name { color: var(--green); }
+  .page-url {
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: monospace;
+  }
+  .ext-icon {
+    font-size: 12px; color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* TOGGLE BUTTONS */
+  .toggle-wrap {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-sim, .btn-nao {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 14px 5px 10px;
+    border-radius: 99px;
+    border: none;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+    outline: none;
+  }
+  .btn-sim {
+    background: #eef7ee;
+    color: #5a9a5a;
+  }
+  .btn-sim .icon {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    background: #a8d5a8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    transition: background 0.18s;
+    flex-shrink: 0;
+  }
+  .btn-sim.active {
+    background: #1e8a1e;
+    color: #fff;
+  }
+  .btn-sim.active .icon {
+    background: rgba(255,255,255,0.3);
+  }
+  .btn-sim:hover {
+    background: #d0eccd;
+    color: #1a6a1a;
+  }
+  .btn-sim:hover .icon { background: #1e8a1e; }
+  .btn-nao {
+    background: #fef0f1;
+    color: #c09098;
+  }
+  .btn-nao .icon {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    background: #f0b0b8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #fff; line-height: 1;
+    transition: background 0.18s;
+    flex-shrink: 0;
+  }
+  .btn-nao.active {
+    background: #d03040;
+    color: #fff;
+  }
+  .btn-nao.active .icon {
+    background: rgba(255,255,255,0.3);
+  }
+  .btn-nao:hover {
+    background: #fdd8da;
+    color: #a02030;
+  }
+  .btn-nao:hover .icon { background: #d03040; }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 5;
+    border-top: 1px solid var(--border);
+    padding: 2rem 2.5rem;
+    display: flex; align-items: flex-start; gap: 3rem;
+    flex-wrap: wrap;
+  }
+  .footer-brand { flex: 1; min-width: 220px; }
+  .footer-brand img { height: 40px; margin-bottom: 0.75rem; opacity: 0.85; }
+  .footer-brand p { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+  
+  
+  
+  
+  .footer-seo ul li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--green); font-size: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .seo-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 600px) {
+    .container { padding-left: 1rem; padding-right: 1rem; }
+    .hero { padding: 2rem 0 1.5rem; }
+    h1 { font-size: 1.8rem; }
+    footer { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+<div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:2rem;">
+  <div class="logo-wrap">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:44px;height:44px;background:#1e8a1e;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+        <span style="color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;">H</span>
+      </div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:var(--green);letter-spacing:-0.5px;text-transform:uppercase;">Higilabor</div>
+        <div style="font-size:10px;color:var(--text-muted);letter-spacing:0.5px;">Higiene, Segurança e Medicina do Trabalho</div>
+      </div>
+    </div>
+  </div>
+  <div class="header-badge">Painel de Migração · 2025</div>
+</div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+<div class="container">
+  <div class="hero-tag">Migração de Site + SEO Local</div>
+  <h1>Gestão de <span>migração</span><br>de conteúdo</h1>
+  <p class="hero-sub">
+    Selecione quais páginas serão migradas para o novo site da Higilabor. Acompanhe o progresso em tempo real e garanta uma transição sem perda de SEO Local.
+  </p>
+</div>
+</div>
+
+<!-- SEO COPY + CHECKLIST TOPO -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 auto 2rem;max-width:1100px;position:relative;z-index:5;">
+
+  <div class="seo-copy" style="margin:0;">
+    <h2>Serviço de Migração de Conteúdo + SEO Local</h2>
+    <p>A <strong>Higilabor</strong> atua no segmento de <strong>Higiene, Segurança e Medicina do Trabalho</strong> com serviços especializados como <strong>PGR, LTCAT, PCMSO, laudos de insalubridade e periculosidade</strong>, treinamentos NR e avaliações de agentes químicos e físicos.</p>
+    <p style="margin-top:0.75rem;">A migração contempla <strong>revisão completa de SEO On-Page</strong>, reestruturação semântica (H1→H4) e <strong>otimização de SEO Local</strong> com foco em ranqueamento para buscas como <em>"empresa de segurança do trabalho em [cidade]"</em>.</p>
+    <p style="margin-top:0.75rem;">Cada página receberá <strong>copy reescrita</strong> e <strong>palavras-chave locais inseridas estrategicamente</strong>, atualização de meta titles, meta descriptions, Schema Markup de serviços, CTAs de conversão e integração com Google Meu Negócio — garantindo autoridade e visibilidade orgânica no novo domínio.</p>
+  </div>
+
+  <div class="seo-copy" style="margin:0;">
+    <h2>Checklist de SEO Local na Migração</h2>
+    <ul style="list-style:none;margin-top:0.5rem;">
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Reescrita de meta title com cidade + serviço</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Meta description com CTA e localização</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>H1 otimizado com palavra-chave local</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Schema Markup de LocalBusiness e Service</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Redirecionamentos 301 de todas as URLs antigas</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Atualização do Google Meu Negócio com novo site</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Inserção de NAP (Nome, Endereço, Telefone) consistente</li>
+      <li style="font-size:13px;color:var(--text-muted);line-height:2.2;padding-left:18px;position:relative;"><span style="position:absolute;left:0;color:var(--green);">→</span>Google Search Console com novo sitemap.xml</li>
+    </ul>
+  </div>
+
+</div>
+
+
+<!-- EXPORT BAR -->
+<div style="background:#fff;border-bottom:1px solid var(--border);padding:0.75rem 0;position:relative;z-index:6;">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+    <div style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+      <span style="font-size:14px;">📋</span>
+      Selecione as páginas e gere o relatório Word para enviar ao cliente
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button onclick="gerarWord()" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:0.5rem 1.25rem;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+        📄 Gerar Relatório Word
+      </button>
+      <button onclick="abrirEmailModal()" style="background:#fff;color:var(--green);border:1px solid var(--border-strong);border-radius:6px;padding:0.5rem 1.25rem;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+        ✉️ Enviar por E-mail
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div id="email-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:2rem;width:100%;max-width:440px;margin:1rem;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);text-transform:uppercase;margin-bottom:1rem;">Enviar relatório por e-mail</h3>
+    <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">E-mail do destinatário</label>
+    <input id="email-dest" type="email" placeholder="rogerio@mercadoopen.com.br" style="width:100%;padding:0.6rem 0.75rem;border:1px solid var(--border-strong);border-radius:6px;font-size:13px;margin-bottom:0.75rem;outline:none;font-family:'Barlow',sans-serif;">
+    <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">Assunto</label>
+    <input id="email-assunto" type="text" value="Higilabor – Relatório de Migração de Site" style="width:100%;padding:0.6rem 0.75rem;border:1px solid var(--border-strong);border-radius:6px;font-size:13px;margin-bottom:0.75rem;outline:none;font-family:'Barlow',sans-serif;">
+    <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">Mensagem</label>
+    <textarea id="email-msg" rows="3" style="width:100%;padding:0.6rem 0.75rem;border:1px solid var(--border-strong);border-radius:6px;font-size:13px;margin-bottom:1rem;outline:none;font-family:'Barlow',sans-serif;resize:vertical;">Segue o relatório de migração do site Higilabor com as páginas selecionadas para migração.</textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="fecharEmailModal()" style="background:#fff;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:0.5rem 1rem;font-size:13px;cursor:pointer;">Cancelar</button>
+      <button onclick="enviarEmail()" style="background:var(--green);color:#fff;border:none;border-radius:6px;padding:0.5rem 1.25rem;font-size:13px;font-weight:600;cursor:pointer;">Enviar via Gmail ↗</button>
+    </div>
+    <p style="font-size:11px;color:var(--text-dim);margin-top:0.75rem;text-align:center;">Abre o Gmail com o resumo no corpo do e-mail. Anexe o Word gerado manualmente.</p>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+<div class="container" style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+  <div class="stat">
+    <div>
+      <div class="stat-num" id="count-total">55</div>
+      <div class="stat-label">Total de<br>Páginas</div>
+    </div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div>
+      <div class="stat-num" id="count-sim">0</div>
+      <div class="stat-label">Migrar<br>Sim</div>
+    </div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div>
+      <div class="stat-num red" id="count-nao">0</div>
+      <div class="stat-label">Não<br>Migrar</div>
+    </div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stat">
+    <div>
+      <div class="stat-num" id="count-pendente">55</div>
+      <div class="stat-label">Ainda<br>Pendentes</div>
+    </div>
+  </div>
+  <div class="stat-divider"></div>
+  <div class="stats-bar progress-wrap" style="flex:1;min-width:200px;">
+    <div class="progress-label">Progresso da seleção</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<main>
+<div class="container">
+
+  <!-- PÁGINAS PRINCIPAIS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🏠</div>
+      <div class="section-title">Páginas Principais</div>
+      <div class="section-count">6 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-principais"></div>
+  </div>
+
+  <!-- GERENCIAMENTO DE RISCOS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🛡️</div>
+      <div class="section-title">Gerenciamento de Riscos</div>
+      <div class="section-count">5 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-riscos"></div>
+  </div>
+
+  <!-- PROGRAMAS DE PROTEÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🫁</div>
+      <div class="section-title">Programas de Proteção</div>
+      <div class="section-count">4 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-protecao"></div>
+  </div>
+
+  <!-- LAUDOS E CONFORMIDADE -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div class="section-title">Laudos e Conformidade</div>
+      <div class="section-count">6 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-laudos"></div>
+  </div>
+
+  <!-- AVALIAÇÕES DE AGENTES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🧪</div>
+      <div class="section-title">Avaliações de Agentes</div>
+      <div class="section-count">5 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-avaliacoes"></div>
+  </div>
+
+  <!-- EMERGÊNCIA E SEGURANÇA -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🚨</div>
+      <div class="section-title">Emergência e Segurança</div>
+      <div class="section-count">4 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-emergencia"></div>
+  </div>
+
+  <!-- TREINAMENTOS NR -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">🎓</div>
+      <div class="section-title">Treinamentos NR</div>
+      <div class="section-count">5 páginas</div>
+    </div>
+    <div class="pages-grid" id="grid-treinamentos"></div>
+  </div>
+
+
+  <!-- PÁGINAS ENVIADAS PELO OCTÁVIO – SEO LOCAL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📍</div>
+      <div class="section-title">Páginas enviadas pelo Octávio – SEO Local (cidades)</div>
+      <div class="section-count">14 páginas</div>
+    </div>
+    <div style="background:rgba(30,138,30,0.06);border:1px solid rgba(30,138,30,0.2);border-radius:8px;padding:0.6rem 1rem;margin-bottom:0.75rem;font-size:12px;color:#4a6e4a;display:flex;align-items:center;gap:8px;">
+      <span>📂</span> Páginas HTML entregues pelo Octávio — 10 páginas de cidade (SEO Local) + 4 páginas de serviço em Uberlândia
+    </div>
+    <div class="pages-grid" id="grid-octavio_html"></div>
+  </div>
+
+  <!-- ARTIGOS DE BLOG ENVIADOS PELO OCTÁVIO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon">📝</div>
+      <div class="section-title">Artigos de blog enviados pelo Octávio</div>
+      <div class="section-count">6 artigos</div>
+    </div>
+    <div style="background:rgba(30,138,30,0.06);border:1px solid rgba(30,138,30,0.2);border-radius:8px;padding:0.6rem 1rem;margin-bottom:0.75rem;font-size:12px;color:#4a6e4a;display:flex;align-items:center;gap:8px;">
+      <span>📄</span> Artigos .docx prontos para publicação no blog — conteúdo SEO com foco em compliance SST 2026
+    </div>
+    <div class="pages-grid" id="grid-octavio_artigos"></div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+<div class="container" style="display:flex;align-items:flex-start;gap:3rem;flex-wrap:wrap;">
+  <div class="footer-brand">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:var(--green);margin-bottom:0.5rem;">HIGILABOR</div>
+    <p>Higilabor – Higiene, Segurança<br>e Medicina do Trabalho<br>higilabor.com.br</p>
+  </div>
+  
+</div>
+
+<!-- COMPLETION BANNER -->
+<div id="completion-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:#fff;border-top:3px solid var(--green);box-shadow:0 -4px 30px rgba(30,138,30,0.15);padding:1rem 0;animation:slideUp 0.4s ease;">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:42px;height:42px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">✅</div>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;">Todas as páginas respondidas!</div>
+        <div style="font-size:12px;color:var(--text-muted);">Gere o relatório Word e envie para o Rogério via WhatsApp para iniciar a proposta de migração.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <button onclick="gerarWord()" style="background:var(--green-dark);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">
+        📄 1. Gerar Relatório Word
+      </button>
+      <a id="whatsapp-btn" href="#" target="_blank" style="background:#25D366;color:#fff;border:none;border-radius:8px;padding:0.65rem 1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        2. Enviar no WhatsApp
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+</style>
+
+</footer>
+
+<script>
+const PAGES = {
+  principais: [
+    { name: 'Home', url: 'https://higilabor.com.br/' },
+    { name: 'Sobre nós', url: 'https://higilabor.com.br/sobre-nos' },
+    { name: 'Contato', url: 'https://higilabor.com.br/contato' },
+    { name: 'Blog', url: 'https://higilabor.com.br/blog/' },
+    { name: 'Política de privacidade', url: 'https://higilabor.com.br/politica-de-privacidade/' },
+    { name: 'FAQ (seção home)', url: 'https://higilabor.com.br/#faq' },
+  ],
+  riscos: [
+    { name: 'Gerenciamento de riscos', url: 'https://higilabor.com.br/gerenciamento-de-riscos-3/' },
+    { name: 'APR – Análise preliminar de risco', url: 'https://higilabor.com.br/apr-analise-preliminar-de-risco/' },
+    { name: 'PGR – Programa de gerenciamento de riscos', url: 'https://higilabor.com.br/programa-de-gerenciamento-de-riscos-pgr/' },
+    { name: 'PCMAT – Condições e meio ambiente de trabalho', url: 'https://higilabor.com.br/pcmat-programa-de-condicoes-e-meio-ambiente-de-trabalho/' },
+    { name: 'PPP – Perfil profissiográfico previdenciário', url: 'https://higilabor.com.br/ppp-perfil-profissiografico-previdenciario/' },
+  ],
+  protecao: [
+    { name: 'PPR – Proteção respiratória', url: 'https://higilabor.com.br/ppr-programa-de-protecao-respiratoria/' },
+    { name: 'PCA – Conservação auditiva', url: 'https://higilabor.com.br/pca-programa-de-conservacao-auditiva' },
+    { name: 'PCMSO – Controle médico e saúde ocupacional', url: 'https://higilabor.com.br/pcmso-programa-de-controle-medico-e-saude-ocupacional/' },
+    { name: 'Projeto de redução de ruído industrial', url: 'https://higilabor.com.br/projeto-de-reducao-de-ruido-industrial/' },
+  ],
+  laudos: [
+    { name: 'Laudos de conformidade', url: 'https://higilabor.com.br/laudos-de-conformidade/' },
+    { name: 'LTCAT – Condições do ambiente de trabalho', url: 'https://higilabor.com.br/ltcat-laudo-tecnico-de-condicoes-do-ambiente-de-trabalho/' },
+    { name: 'Laudo de insalubridade', url: 'https://higilabor.com.br/laudo-de-insalubridade/' },
+    { name: 'Laudo de periculosidade', url: 'https://higilabor.com.br/laudo-de-periculosidade/' },
+    { name: 'Relatório de impacto de vizinhança', url: 'https://higilabor.com.br/relatorio-de-impacto-de-vizinhanca/' },
+    { name: 'Laudo cautelar de obras', url: 'https://higilabor.com.br/laudo-cautelar-de-obras/' },
+  ],
+  avaliacoes: [
+    { name: 'Avaliações de agentes químicos e físicos', url: 'https://higilabor.com.br/avaliacoes-de-agentes-quimicos-e-fisicos/' },
+    { name: 'Avaliações quantitativas', url: 'https://higilabor.com.br/avaliacoes-quantitativas/' },
+    { name: 'Avaliações: ácido fluorídrico, sulfúrico e clorídrico', url: 'https://higilabor.com.br/avaliacoes-quimicas-de-acido-fluoridrico-sulfurico-e-cloridrico-protecao-essencial-no-ambiente-de-trabalho/' },
+    { name: 'Avaliação de fumos metálicos', url: 'https://higilabor.com.br/avaliacao-quimica-de-fumos-metalicos-protecao-essencial-para-a-saude-dos-trabalhadores/' },
+    { name: 'Avaliações de calor em ambientes de trabalho', url: 'https://higilabor.com.br/avaliacoes-de-calor-em-ambientes-de-trabalho/' },
+  ],
+  emergencia: [
+    { name: 'Plano de atendimento a emergências', url: 'https://higilabor.com.br/plano-de-atendimento-a-emergencias/' },
+    { name: 'Plano de abandono de área', url: 'https://higilabor.com.br/plano-de-abandono-de-area/' },
+    { name: 'CIPA – NR-05', url: 'https://higilabor.com.br/cipa-nr-05/' },
+    { name: 'Brigada de incêndio', url: 'https://higilabor.com.br/brigada-de-incendio/' },
+  ],
+  octavio_html: [
+    { name: 'Segurança do Trabalho em Uberaba MG', url: 'https://higilabor.com.br/seguranca-trabalho-uberaba' },
+    { name: 'Segurança do Trabalho em Araguari MG', url: 'https://higilabor.com.br/seguranca-trabalho-araguari' },
+    { name: 'Segurança do Trabalho em Araxá MG', url: 'https://higilabor.com.br/seguranca-trabalho-araxa' },
+    { name: 'Segurança do Trabalho em Campos Altos MG', url: 'https://higilabor.com.br/seguranca-trabalho-campos-altos' },
+    { name: 'Segurança do Trabalho em Ibiá MG', url: 'https://higilabor.com.br/seguranca-trabalho-ibia' },
+    { name: 'Segurança do Trabalho em Ituiutaba MG', url: 'https://higilabor.com.br/seguranca-trabalho-ituiutaba' },
+    { name: 'Segurança do Trabalho em Monte Carmelo MG', url: 'https://higilabor.com.br/seguranca-trabalho-monte-carmelo' },
+    { name: 'Segurança do Trabalho em Patos de Minas MG', url: 'https://higilabor.com.br/seguranca-trabalho-patos-de-minas' },
+    { name: 'Segurança do Trabalho em Patrocínio MG', url: 'https://higilabor.com.br/seguranca-trabalho-patrocinio' },
+    { name: 'Segurança do Trabalho em Rio Paranaíba MG', url: 'https://higilabor.com.br/seguranca-trabalho-rio-paranaiba' },
+    { name: 'Empresa de SST Uberlândia', url: 'https://higilabor.com.br/empresa-sst-uberlandia' },
+    { name: 'Exame Admissional Uberlândia', url: 'https://higilabor.com.br/exame-admissional-uberlandia' },
+    { name: 'Medicina do Trabalho Uberlândia', url: 'https://higilabor.com.br/medicina-do-trabalho-uberlandia' },
+    { name: 'Consultoria SST Uberlândia', url: 'https://higilabor.com.br/consultoria-sst-uberlandia' },
+  ],
+  octavio_artigos: [
+    { name: 'Artigo: Empresa sem PCMSO – O que acontece?', url: 'https://higilabor.com.br/blog/empresa-sem-pcmso-o-que-acontece' },
+    { name: 'Artigo: Multas eSocial SST 2026', url: 'https://higilabor.com.br/blog/multas-esocial-sst-2026' },
+    { name: 'Artigo: CAT Acidente de Trabalho e eSocial', url: 'https://higilabor.com.br/blog/cat-comunicacao-acidente-trabalho-esocial' },
+    { name: 'Artigo: NR-6 EPI – Obrigações da Empresa 2026', url: 'https://higilabor.com.br/blog/nr6-epi-obrigacoes-empresa-2026' },
+    { name: 'Artigo: Empresa sem PGR – O que acontece?', url: 'https://higilabor.com.br/blog/empresa-sem-pgr-o-que-acontece' },
+    { name: 'Artigo: Riscos Psicossociais no PGR – Dúvidas Frequentes', url: 'https://higilabor.com.br/blog/riscos-psicossociais-pgr-duvidas-frequentes' },
+  ],
+  treinamentos: [
+    { name: 'Treinamentos para brigada de incêndio', url: 'https://higilabor.com.br/treinamentos-para-brigada-de-incendio/' },
+    { name: 'Espaço confinado – NR-33', url: 'https://higilabor.com.br/espaco-confinado-nr-33/' },
+    { name: 'Primeiros socorros', url: 'https://higilabor.com.br/primeiros-socorros/' },
+    { name: 'Trabalho em altura – NR-35', url: 'https://higilabor.com.br/trabalho-em-altura-nr-35/' },
+    { name: 'Operador de empilhadeira', url: 'https://higilabor.com.br/operador-de-empilhadeira/' },
+  ],
+};
+
+const state = {};
+
+function slugify(url) {
+  return url.replace(/[^a-z0-9]/gi, '_');
+}
+
+function updateStats() {
+  const keys = Object.keys(state);
+  const total = Object.values(PAGES).flat().length;
+  const sim = keys.filter(k => state[k] === 'sim').length;
+  const nao = keys.filter(k => state[k] === 'nao').length;
+  const pendente = total - sim - nao;
+  document.getElementById('count-total').textContent = total;
+  document.getElementById('count-sim').textContent = sim;
+  document.getElementById('count-nao').textContent = nao;
+  document.getElementById('count-pendente').textContent = pendente;
+  const pct = Math.round(((sim + nao) / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Show completion banner when ALL pages are answered
+  const banner = document.getElementById('completion-banner');
+  if (pendente === 0 && total > 0) {
+    banner.style.display = 'block';
+    document.body.style.paddingBottom = '90px';
+    // Build WhatsApp message
+    const agora = new Date().toLocaleDateString('pt-BR');
+    const msg = encodeURIComponent(
+      '👋 Olá Rogério! Acabei de preencher o painel de migração do site Higilabor.\n\n' +
+      '📊 *Resumo da seleção (' + agora + '):*\n' +
+      '✅ Migrar: ' + sim + ' páginas\n' +
+      '❌ Não migrar: ' + nao + ' páginas\n' +
+      '📄 Total avaliado: ' + total + ' páginas\n\n' +
+      'Segue o relatório Word em anexo. Podemos avançar com a proposta de migração? 🚀'
+    );
+    document.getElementById('whatsapp-btn').href = 'https://wa.me/5534988634055?text=' + msg;
+  } else {
+    banner.style.display = 'none';
+    document.body.style.paddingBottom = '0';
+  }
+}
+
+function setSim(id) {
+  state[id] = 'sim';
+  document.getElementById('btn-sim-' + id).classList.add('active');
+  document.getElementById('btn-nao-' + id).classList.remove('active');
+  document.getElementById('card-' + id).className = 'page-card migrar';
+  updateStats();
+}
+
+function setNao(id) {
+  state[id] = 'nao';
+  document.getElementById('btn-nao-' + id).classList.add('active');
+  document.getElementById('btn-sim-' + id).classList.remove('active');
+  document.getElementById('card-' + id).className = 'page-card nao-migrar';
+  updateStats();
+}
+
+function renderGrid(gridId, pages) {
+  const grid = document.getElementById(gridId);
+  pages.forEach(page => {
+    const id = slugify(page.url);
+    state[id] = 'pendente';
+    const card = document.createElement('div');
+    card.className = 'page-card';
+    card.id = 'card-' + id;
+    card.innerHTML = `
+      <a class="page-link" href="${page.url}" target="_blank" rel="noopener">
+        <span class="page-name">${page.name}</span>
+        <span class="page-url">${page.url}</span>
+      </a>
+      <span class="ext-icon">↗</span>
+      <div class="toggle-wrap">
+        <button class="btn-sim" id="btn-sim-${id}" onclick="setSim('${id}')"><span class="icon">✓</span>Sim</button><button class="btn-nao" id="btn-nao-${id}" onclick="setNao('${id}')"><span class="icon">✕</span>Não</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+Object.entries(PAGES).forEach(([key, pages]) => renderGrid('grid-' + key, pages));
+
+// Pré-marca "Páginas Principais" como SIM
+PAGES.principais.forEach(page => { setSim(slugify(page.url)); });
+
+updateStats();
+
+
+// ===== GERAR RELATÓRIO WORD =====
+function gerarWord() {
+  var categorias = {
+    'Páginas Principais': PAGES.principais,
+    'Gerenciamento de Riscos': PAGES.riscos,
+    'Programas de Proteção': PAGES.protecao,
+    'Laudos e Conformidade': PAGES.laudos,
+    'Avaliações de Agentes': PAGES.avaliacoes,
+    'Emergência e Segurança': PAGES.emergencia,
+    'Treinamentos NR': PAGES.treinamentos,
+    'Páginas SEO Local (Octávio)': PAGES.octavio_html,
+    'Artigos de Blog (Octávio)': PAGES.octavio_artigos,
+  };
+
+  var agora = new Date().toLocaleDateString('pt-BR');
+  var simCount = Object.values(state).filter(function(v){ return v === 'sim'; }).length;
+  var naoCount = Object.values(state).filter(function(v){ return v === 'nao'; }).length;
+  var total = Object.values(PAGES).flat().length;
+
+  var doc = '<html><head><meta charset="UTF-8"><style>'
+    + 'body{font-family:Arial,sans-serif;margin:2cm;color:#1a2e1a}'
+    + 'h1{color:#1e8a1e;font-size:22pt;border-bottom:2px solid #1e8a1e;padding-bottom:8pt}'
+    + 'h2{color:#1e8a1e;font-size:14pt;margin-top:20pt;border-left:4px solid #1e8a1e;padding-left:8pt}'
+    + '.resumo{background:#f5f7f5;border:1px solid #c8e6c8;border-radius:6pt;padding:12pt;margin:12pt 0}'
+    + 'table{width:100%;border-collapse:collapse;margin:8pt 0;font-size:10pt}'
+    + 'th{background:#1e8a1e;color:#fff;padding:6pt 8pt;text-align:left}'
+    + 'td{padding:5pt 8pt;border-bottom:1px solid #e0e8e0}'
+    + 'tr:nth-child(even) td{background:#f5f7f5}'
+    + '.sim{color:#1e8a1e;font-weight:bold}.nao{color:#999}.pendente{color:#e08800}'
+    + '.footer{margin-top:24pt;font-size:9pt;color:#7a9a7a;border-top:1px solid #c8e6c8;padding-top:8pt}'
+    + '</style></head><body>'
+    + '<h1>Higilabor – Relatório de Migração de Site</h1>'
+    + '<div class="resumo">'
+    + '<p><b>Data:</b> ' + agora + '</p>'
+    + '<p><b>Total de páginas:</b> ' + total + '</p>'
+    + '<p><b>Migrar (Sim):</b> ' + simCount + '</p>'
+    + '<p><b>Não migrar:</b> ' + naoCount + '</p>'
+    + '<p><b>Pendentes:</b> ' + (total - simCount - naoCount) + '</p>'
+    + '</div>';
+
+  Object.keys(categorias).forEach(function(cat) {
+    var pages = categorias[cat];
+    doc += '<h2>' + cat + '</h2>';
+    doc += '<table><tr><th>Página</th><th>URL</th><th>Migrar?</th></tr>';
+    pages.forEach(function(page) {
+      var id = slugify(page.url);
+      var status = state[id] || 'pendente';
+      var label = status === 'sim' ? 'Sim' : status === 'nao' ? 'Não' : 'Pendente';
+      doc += '<tr><td>' + page.name + '</td><td style="font-size:8pt;color:#4a6e4a">' + page.url + '</td><td class="' + status + '">' + label + '</td></tr>';
+    });
+    doc += '</table>';
+  });
+
+  doc += '<div class="footer">Mercado Open – Painel de Migração Higilabor | higilabor.com.br</div>
+<!-- MODAL RELATÓRIO -->
+<div id="relatorio-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#fff;border-radius:12px;width:100%;max-width:860px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="padding:1rem 1.5rem;border-bottom:1px solid #e0e8e0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#1a2e1a;text-transform:uppercase;">📄 Relatório de Migração — Higilabor</div>
+        <div style="font-size:12px;color:#7a9a7a;margin-top:2px;">Use Ctrl+P para imprimir ou salvar como PDF</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="imprimirRelatorio()" style="background:#1e8a1e;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Imprimir / Salvar PDF</button>
+        <button onclick="fecharRelatorio()" style="background:#f5f7f5;color:#4a6e4a;border:1px solid #c8d8c8;border-radius:6px;padding:6px 16px;font-size:13px;cursor:pointer;">✕ Fechar</button>
+      </div>
+    </div>
+    <iframe id="relatorio-frame" style="flex:1;border:none;width:100%;min-height:500px;" srcdoc=""></iframe>
+  </div>
+</div>
+
+<script>
+function fecharRelatorio() {
+  document.getElementById('relatorio-modal').style.display = 'none';
+}
+function imprimirRelatorio() {
+  document.getElementById('relatorio-frame').contentWindow.print();
+}
+document.getElementById('relatorio-modal').addEventListener('click', function(e){
+  if(e.target === this) fecharRelatorio();
+});
+</script>
+
+</body></html>';
+
+  // Exibe o relatório em modal interno - funciona em qualquer ambiente
+  var modal = document.getElementById('relatorio-modal');
+  var frame = document.getElementById('relatorio-frame');
+  frame.srcdoc = doc;
+  modal.style.display = 'flex';
+}
+
+
+function abrirEmailModal() {
+  document.getElementById('email-modal').style.display = 'flex';
+}
+
+function fecharEmailModal() {
+  document.getElementById('email-modal').style.display = 'none';
+}
+
+function enviarEmail() {
+  const dest = document.getElementById('email-dest').value;
+  const assunto = encodeURIComponent(document.getElementById('email-assunto').value);
+  const simCount = Object.values(state).filter(v => v === 'sim').length;
+  const naoCount = Object.values(state).filter(v => v === 'nao').length;
+  const total = Object.values(PAGES).flat().length;
+  const agora = new Date().toLocaleDateString('pt-BR');
+
+  let corpo = document.getElementById('email-msg').value + '\n\n';
+  corpo += '--- RESUMO ---\n';
+  corpo += 'Data: ' + agora + '\n';
+  corpo += 'Total de páginas: ' + total + '\n';
+  corpo += 'Migrar (Sim): ' + simCount + '\n';
+  corpo += 'Não migrar: ' + naoCount + '\n';
+  corpo += 'Pendentes: ' + (total - simCount - naoCount) + '\n\n';
+
+  const categorias = {
+    'Páginas Principais': PAGES.principais,
+    'Gerenciamento de Riscos': PAGES.riscos,
+    'Programas de Proteção': PAGES.protecao,
+    'Laudos e Conformidade': PAGES.laudos,
+    'Avaliações de Agentes': PAGES.avaliacoes,
+    'Emergência e Segurança': PAGES.emergencia,
+    'Treinamentos NR': PAGES.treinamentos,
+    'Páginas SEO Local (Octávio)': PAGES.octavio_html,
+    'Artigos de Blog (Octávio)': PAGES.octavio_artigos,
+  };
+  Object.entries(categorias).forEach(([cat, pages]) => {
+    const simPages = pages.filter(p => (state[slugify(p.url)] || 'pendente') === 'sim');
+    if (simPages.length > 0) {
+      corpo += cat.toUpperCase() + '\n';
+      simPages.forEach(p => { corpo += '  ✅ ' + p.name + '\n'; });
+      corpo += '\n';
+    }
+  });
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(dest)}&su=${assunto}&body=${encodeURIComponent(corpo)}`;
+  window.open(gmailUrl, '_blank');
+  fecharEmailModal();
+}
+
+// Fechar modal clicando fora
+document.getElementById('email-modal').addEventListener('click', function(e) {
+  if (e.target === this) fecharEmailModal();
+});
+
+</script>
