@@ -816,53 +816,50 @@ function gerarWord() {
     'Páginas SEO Local (Octávio)': PAGES.octavio_html,
     'Artigos de Blog (Octávio)': PAGES.octavio_artigos,
   };
-
   var agora = new Date().toLocaleDateString('pt-BR');
-  var simCount = Object.values(state).filter(function(v){ return v === 'sim'; }).length;
-  var naoCount = Object.values(state).filter(function(v){ return v === 'nao'; }).length;
+  var simCount = Object.values(state).filter(function(v){ return v==='sim'; }).length;
+  var naoCount = Object.values(state).filter(function(v){ return v==='nao'; }).length;
   var total = Object.values(PAGES).flat().length;
 
-  var doc = '<html><head><meta charset="UTF-8"><style>'
-    + 'body{font-family:Arial,sans-serif;margin:2cm;color:#1a2e1a}'
-    + 'h1{color:#1e8a1e;font-size:22pt;border-bottom:2px solid #1e8a1e;padding-bottom:8pt}'
-    + 'h2{color:#1e8a1e;font-size:14pt;margin-top:20pt;border-left:4px solid #1e8a1e;padding-left:8pt}'
-    + '.resumo{background:#f5f7f5;border:1px solid #c8e6c8;border-radius:6pt;padding:12pt;margin:12pt 0}'
-    + 'table{width:100%;border-collapse:collapse;margin:8pt 0;font-size:10pt}'
-    + 'th{background:#1e8a1e;color:#fff;padding:6pt 8pt;text-align:left}'
-    + 'td{padding:5pt 8pt;border-bottom:1px solid #e0e8e0}'
-    + 'tr:nth-child(even) td{background:#f5f7f5}'
-    + '.sim{color:#1e8a1e;font-weight:bold}.nao{color:#999}.pendente{color:#e08800}'
-    + '.footer{margin-top:24pt;font-size:9pt;color:#7a9a7a;border-top:1px solid #c8e6c8;padding-top:8pt}'
-    + '</style></head><body>'
-    + '<h1>Higilabor – Relatório de Migração de Site</h1>'
-    + '<div class="resumo">'
-    + '<p><b>Data:</b> ' + agora + '</p>'
-    + '<p><b>Total de páginas:</b> ' + total + '</p>'
-    + '<p><b>Migrar (Sim):</b> ' + simCount + '</p>'
-    + '<p><b>Não migrar:</b> ' + naoCount + '</p>'
-    + '<p><b>Pendentes:</b> ' + (total - simCount - naoCount) + '</p>'
-    + '</div>';
-
+  var rows = '';
   Object.keys(categorias).forEach(function(cat) {
     var pages = categorias[cat];
-    doc += '<h2>' + cat + '</h2>';
-    doc += '<table><tr><th>Página</th><th>URL</th><th>Migrar?</th></tr>';
+    rows += '<tr style="background:#1e8a1e"><td colspan="3" style="color:#fff;font-weight:bold;padding:8px;font-size:13pt">' + cat + '</td></tr>';
     pages.forEach(function(page) {
       var id = slugify(page.url);
-      var status = state[id] || 'pendente';
-      var label = status === 'sim' ? 'Sim' : status === 'nao' ? 'Não' : 'Pendente';
-      doc += '<tr><td>' + page.name + '</td><td style="font-size:8pt;color:#4a6e4a">' + page.url + '</td><td class="' + status + '">' + label + '</td></tr>';
+      var st = state[id] || 'pendente';
+      var cor = st==='sim' ? '#1e8a1e' : st==='nao' ? '#cc2233' : '#e08800';
+      var label = st==='sim' ? '✅ Sim' : st==='nao' ? '❌ Não' : '⏳ Pendente';
+      rows += '<tr><td style="padding:6px 8px;border-bottom:1px solid #ddd">' + page.name + '</td>'
+            + '<td style="padding:6px 8px;border-bottom:1px solid #ddd;font-size:9pt;color:#4a6e4a">' + page.url + '</td>'
+            + '<td style="padding:6px 8px;border-bottom:1px solid #ddd;color:' + cor + ';font-weight:bold">' + label + '</td></tr>';
     });
-    doc += '</table>';
   });
 
-    doc += '<div class="footer">Mercado Open – Painel de Migração Higilabor | higilabor.com.br</div></body></html>';
+  var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Higilabor Migração</title>'
+    + '<style>body{font-family:Arial,sans-serif;margin:40px;color:#1a2e1a}'
+    + 'h1{color:#1e8a1e;border-bottom:2px solid #1e8a1e;padding-bottom:8px}'
+    + '.box{background:#f5f7f5;border:1px solid #c8e6c8;padding:16px;border-radius:8px;margin:16px 0}'
+    + 'table{width:100%;border-collapse:collapse;margin-top:16px}'
+    + 'th{background:#1e8a1e;color:#fff;padding:8px;text-align:left}'
+    + '@media print{button{display:none}}'
+    + '</style></head><body>'
+    + '<h1>Higilabor – Relatório de Migração</h1>'
+    + '<div class="box">'
+    + '<b>Data:</b> ' + agora + ' &nbsp;|&nbsp; '
+    + '<b>Total:</b> ' + total + ' páginas &nbsp;|&nbsp; '
+    + '<b style="color:#1e8a1e">Migrar: ' + simCount + '</b> &nbsp;|&nbsp; '
+    + '<b style="color:#cc2233">Não migrar: ' + naoCount + '</b> &nbsp;|&nbsp; '
+    + '<b style="color:#e08800">Pendentes: ' + (total-simCount-naoCount) + '</b>'
+    + '</div>'
+    + '<button onclick="window.print()" style="background:#1e8a1e;color:#fff;border:none;padding:10px 24px;font-size:14px;border-radius:6px;cursor:pointer;margin-bottom:16px">🖨️ Imprimir / Salvar PDF</button>'
+    + '<table><tr><th>Página</th><th>URL</th><th>Migrar?</th></tr>' + rows + '</table>'
+    + '</body></html>';
 
-    // Exibe o relatório em modal interno - funciona em qualquer ambiente
-  var modal = document.getElementById('relatorio-modal');
-  var frame = document.getElementById('relatorio-frame');
-  frame.srcdoc = doc;
-  modal.style.display = 'flex';
+  var w = window.open('about:blank', '_blank');
+  w.document.open();
+  w.document.write(doc);
+  w.document.close();
 }
 
 
